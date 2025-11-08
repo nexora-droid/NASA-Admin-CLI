@@ -1,6 +1,7 @@
-import time
 import hashlib
 import getpass
+import pwinput
+import time
 
 USER_FILE = "users.txt"
 def hash_password(password):
@@ -62,23 +63,23 @@ def system():
         name = input("Login Username: ")
         if user_exists(name):
             try:
-                password = getpass.getpass(prompt="Password: ")
+                password = pwinput.pwinput(prompt="Password: ")
             except Exception:
-                password = input("Password (visible): ")
+                password = input("(visible): ")
             if check_password(name, password):
                 print("Login Successful")
                 break
             else:
-                print("Login Unsuccessful! (Incorrect password/username")
+                print("Login Unsuccessful! (Incorrect password/username)")
         else:
             print("User does not exist, proceeding to account creation!")
             while True:
                 try:
-                    password = getpass.getpass(prompt="Create a Password: ")
-                    confirm = getpass.getpass(prompt="Confirm Password: ")
+                    password = pwinput.pwinput(prompt="Create a Password: ")
+                    confirm = pwinput.pwinput(prompt="Confirm Password: ")
                 except Exception:
-                    password = input("Password (visible): ")
-                    confirm = input("Confirm Password (visible): ")
+                    password = input("(visible) ")
+                    confirm = input("(visible): ")
                 if password != confirm:
                     print("Passwords do not match, try again!")
                 elif password == "":
