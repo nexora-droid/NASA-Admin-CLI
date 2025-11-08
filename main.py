@@ -2,10 +2,19 @@ import hashlib
 import getpass
 import pwinput
 import time
+import firebase_admin
+from firebase_admin import firestore, credentials
+from datetime import datetime, timedelta
 
 systemname = ""
 active = True
 USER_FILE = "users.txt"
+cred = credentials.Certificate('firebasekey.json')
+firebase_admin.initialize_app(cred)
+
+db = firestore.client()
+missions_collection = db.collection("missions")
+
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
@@ -93,6 +102,30 @@ def loginsystem():
                     add_user(name, password)
                     print("Account Created Successfully! You can now log in!")
                     break
+def create_mission(name, launch_date):
+    data = {
+        "name": name,
+        "launch_date": launch_date,
+        "created_on": datetime.now()
+    }
+    missions_collection.document(name).set(data)
+    print(f"Mission {name} created successfully! Predicted Launch Date: {launch_date}!")
+
+def list_mission():
+    docs = missions_collection.stream()
+    three_days_ago = datetime.now()-timedelta(days=3)
+    docs = missions_collection.where("created_on", ">=", three_days_ago).stream()
+    print("\nMissions from last 3 days:\n")
+    count = 0
+    for doc in docs:
+        mission = doc.to_dict()
+        print(f"- {mission['name']}, --> Predicted Launch Date: {mission['launch_date']}")
+        count += 1
+    if count == 0:
+        print("No missions created in the last 3 days.")
+
+
+
 
 def system():
     isOn = True
@@ -108,17 +141,23 @@ def system():
                   "status\n"
                   "\tShows system health, and uptime\n"
                   "---------\n"
-                  "schedule\n"
-                  "\tShows upcoming launch schedule\n"
-                  "create <mission> <predicted_launch date>\n"
+                  "create>\n"
                   "\tCreates a new mission\n"
-                  "launch <mission>\n"
-                  "\tLaunches the mission\n")
+                  "launch\n"
+                  "\tLaunches mission (user-specific only)\n"
+                  "list_missions\n"
+                  "\tLists missions created by global users in the past 3 days\n")
         if commandline == "exit":
             isOn = False
-        if commandline == "status":
+        elif commandline == "status":
             global active
             print(f"Active: {active}")
+        elif commandline == "create":
+            mission_name = input("Mission name: ")
+            launch_date = input("Predicted Launch date: ")
+            create_mission(mission_name, launch_date)
+        elif commandline == "list_missions":
+            list_mission()
 if __name__ == "__main__":
     load()
     loginsystem()
