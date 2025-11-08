@@ -3,6 +3,8 @@ import getpass
 import pwinput
 import time
 
+systemname = ""
+active = True
 USER_FILE = "users.txt"
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -58,7 +60,7 @@ def load():
             print("\nSystem Initialized")
             break
 
-def system():
+def loginsystem():
     while True:
         name = input("Login Username: ")
         if user_exists(name):
@@ -68,6 +70,9 @@ def system():
                 password = input("(visible): ")
             if check_password(name, password):
                 print("Login Successful")
+                global systemname
+                systemname = name
+                system()
                 break
             else:
                 print("Login Unsuccessful! (Incorrect password/username)")
@@ -89,6 +94,31 @@ def system():
                     print("Account Created Successfully! You can now log in!")
                     break
 
+def system():
+    isOn = True
+    print("Welcome Admin! Type help to view list of available commands")
+    while isOn:
+        commandline = input(f"/system/NASA/admin/{systemname}/ $ ").strip().lower()
+        if commandline == "help":
+            print("\n\nAvailable Commands:\n"
+                  "help:\n"
+                  "\tlists all commands available\n"
+                  "exit:\n"
+                  "\tExits program, and logs out. Re-run to start again.\n"
+                  "status\n"
+                  "\tShows system health, and uptime\n"
+                  "---------\n"
+                  "schedule\n"
+                  "\tShows upcoming launch schedule\n"
+                  "create <mission> <predicted_launch date>\n"
+                  "\tCreates a new mission\n"
+                  "launch <mission>\n"
+                  "\tLaunches the mission\n")
+        if commandline == "exit":
+            isOn = False
+        if commandline == "status":
+            global active
+            print(f"Active: {active}")
 if __name__ == "__main__":
     load()
-    system()
+    loginsystem()
