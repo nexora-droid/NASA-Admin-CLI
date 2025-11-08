@@ -1,14 +1,10 @@
 import hashlib
 import getpass
-from dataclasses import field
-
 import pwinput
 import time
 import firebase_admin
 from firebase_admin import firestore, credentials
 from datetime import datetime, timedelta
-
-from google.protobuf.timestamp import to_datetime
 
 systemname = ""
 active = True
@@ -180,6 +176,27 @@ def check_progress(mission_name):
         "progress": progress,
         "fuel": fuel
     })
+
+def delete_mission(mission_name):
+    doc_ref = missions_collection.document(mission_name)
+    if not doc_ref.get().exists:
+        print(f"Mission {mission_name} does not exist")
+        return
+    doc_ref.delete()
+    print(f"Mission {mission_name} deleted!")
+
+def summary(mission_name):
+    docs = missions_collection.where("user", "==", systemname).stream()
+    for docs in docs:
+        mission = docs.to_dict()
+        print(f"Mission {mission['name']}, --> By User: {mission['user']}, --> Launched: {mission['launched']}")
+def update(mission_name, new_date):
+    doc_ref = missions_collection.document(mission_name)
+    if not doc_ref.get().exists:
+        print(f"Mission {mission_name} does not exist")
+        return
+    doc_ref.update({"launch_date": new_date})
+    print(f"Mission date changed to {new_date}")
 def system():
     isOn = True
     print("Welcome Admin! Type help to view list of available commands")
@@ -201,7 +218,13 @@ def system():
                   "list_missions\n"
                   "\tLists missions created by global users in the past 3 days\n"
                   "progress\n"
-                  "\tCheck progress of your mission\n")
+                  "\tCheck progress of your mission\n"
+                  "delete\n"
+                  "\tDeletes or cancels mission\n"
+                  "summary\n"
+                  "\tSummarizes a given mission\n"
+                  "update\n"
+                  "\tUpdates predicated launch date")
         if commandline == "exit":
             isOn = False
         elif commandline == "status":
@@ -216,6 +239,13 @@ def system():
         elif commandline== "launch":
             mission_name = input("Mission name: ")
             launch_mission(mission_name)
+        elif commandline == "delete":
+            mission_name = input("Mission name: ")
+            delete_mission(mission_name)
+        elif commandline == "update":
+            mission_name = input("Mission name: ")
+            new_date = input("New mission date: ")
+            update(mission_name, new_date)
 if __name__ == "__main__":
     load()
     loginsystem()
