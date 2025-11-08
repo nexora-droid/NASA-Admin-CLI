@@ -1,3 +1,10 @@
+# Author: nexora-droid (Ashlesh Deshmukh)
+# Year Created: 2025
+# Created for MOONSHOT
+
+# Run pip3 install -r requirements.txt first
+# Then go to terminal and run
+# python main.py
 import hashlib
 import getpass
 import pwinput
@@ -278,6 +285,24 @@ def load_users():
             return json.loads(content)
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
+def rename(mission_name, new_mission_name):
+    try:
+        with open(MISSION_FILE, "r") as f:
+            missions = load_mission()
+    except FileNotFoundError:
+        print("Mission not found!")
+        return
+    if mission_name not in missions:
+        print(f"Mission {mission_name} does not exist")
+        return
+    if new_mission_name in missions:
+        print(f"Mission {new_mission_name} already exists!")
+        return
+
+    missions[new_mission_name] = missions.pop(mission_name)
+    with open(MISSION_FILE, "w") as f:
+        json.dump(missions, f, indent=4)
+        print(f"Mission {new_mission_name} renamed to {mission_name}")
 
 def system():
     isOn = True
@@ -306,7 +331,9 @@ def system():
                   "summary\n"
                   "\tSummarizes a given mission\n"
                   "update\n"
-                  "\tUpdates predicated launch date")
+                  "\tUpdates predicated launch date\n"
+                  "rename\n"
+                  "\tUpdates mission name")
         if commandline == "exit":
             isOn = False
             sys.exit()
@@ -335,6 +362,11 @@ def system():
         elif commandline == "progress":
             mission_name = input("Mission name: ")
             check_progress(mission_name)
+        elif commandline == "rename":
+            mission_name = input("Mission name: ")
+            newname = input("New mission name: ")
+            rename(mission_name, newname)
+
 if __name__ == "__main__":
     load()
     loginsystem()
