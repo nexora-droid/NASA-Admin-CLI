@@ -1,7 +1,7 @@
 # Author: nexora-droid (Ashlesh Deshmukh)
 # Year Created: 2025
 # Created for MOONSHOT
-
+# Hope you like it! Heres how to run it:
 # Run pip3 install -r requirements.txt first
 # Then go to terminal and run
 # python main.py
