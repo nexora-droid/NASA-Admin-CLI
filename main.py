@@ -1,16 +1,21 @@
 import hashlib
 import getpass
+from dataclasses import field
+
 import pwinput
 import time
 import firebase_admin
 from firebase_admin import firestore, credentials
 from datetime import datetime, timedelta
 
+from google.protobuf.timestamp import to_datetime
+
 systemname = ""
 active = True
 USER_FILE = "users.txt"
 cred = credentials.Certificate('firebasekey.json')
 firebase_admin.initialize_app(cred)
+SIM_RATIO = 4
 
 db = firestore.client()
 missions_collection = db.collection("missions")
@@ -106,7 +111,9 @@ def create_mission(name, launch_date):
     data = {
         "name": name,
         "launch_date": launch_date,
-        "created_on": datetime.now()
+        "created_on": datetime.now(),
+        "user": systemname,
+        "launched": False
     }
     missions_collection.document(name).set(data)
     print(f"Mission {name} created successfully! Predicted Launch Date: {launch_date}!")
@@ -119,14 +126,60 @@ def list_mission():
     count = 0
     for doc in docs:
         mission = doc.to_dict()
-        print(f"- {mission['name']}, --> Predicted Launch Date: {mission['launch_date']}")
+        print(f"- {mission['name']}, --> Predicted Launch Date: {mission['launch_date']}, --> By User: {mission['user']}")
         count += 1
     if count == 0:
         print("No missions created in the last 3 days.")
 
 
+def launch_mission(mission_name):
+    doc_ref = missions_collection.document(mission_name)
+    doc = doc_ref.get()
+    if not doc.exists:
+        print(f"Mission {mission_name} does not exist")
+        return
+    mission = doc.to_dict()
+    if mission["launched"] == True:
+        print(f"Mission {mission_name} is already launched!")
+        return
+    start_time = datetime.now()
+    doc_ref.update({
+        "launched": True,
+        "start_time": start_time,
+        "progress": 0,
+        "fuel": 100
+    })
+    print(f"Mission {mission_name} launched!")
 
-
+def check_progress(mission_name):
+    doc_ref = missions_collection.document(mission_name)
+    doc = doc_ref.get()
+    if not doc.exists:
+        print(f"Mission {mission_name} does not exist")
+        return
+    mission=doc.to_dict()
+    if mission["user"] != systemname:
+        print(f"You can only view your own missions!")
+        return
+    if not mission.get("launched"):
+        print(f"Mission has not been launched yet!")
+        return
+    start_time = mission.get('start_time')
+    if hasattr(start_time, "to_datetime"):
+        start_time = start_time.to_datetime()
+    elapsed_realminutes = (datetime.now() - start_time).total_seconds()/60
+    flight_minutes = elapsed_realminutes * SIM_RATIO
+    total_flighttime = 120
+    progress = min((flight_minutes / total_flighttime)*100, 100)
+    fuel = max(100 - progress, 0)
+    print(f'Mission Info\n'
+          f'Mission Name: {mission_name}\n'
+          f'Progress: {progress:.2f}%\n'
+          f'Fuel Remaining: {fuel:.2f}%\n')
+    doc_ref.update({
+        "progress": progress,
+        "fuel": fuel
+    })
 def system():
     isOn = True
     print("Welcome Admin! Type help to view list of available commands")
@@ -146,7 +199,9 @@ def system():
                   "launch\n"
                   "\tLaunches mission (user-specific only)\n"
                   "list_missions\n"
-                  "\tLists missions created by global users in the past 3 days\n")
+                  "\tLists missions created by global users in the past 3 days\n"
+                  "progress\n"
+                  "\tCheck progress of your mission\n")
         if commandline == "exit":
             isOn = False
         elif commandline == "status":
@@ -158,6 +213,9 @@ def system():
             create_mission(mission_name, launch_date)
         elif commandline == "list_missions":
             list_mission()
+        elif commandline== "launch":
+            mission_name = input("Mission name: ")
+            launch_mission(mission_name)
 if __name__ == "__main__":
     load()
     loginsystem()
