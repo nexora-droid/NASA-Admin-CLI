@@ -61,18 +61,33 @@ def system():
     while True:
         name = input("Login Username: ")
         if user_exists(name):
-            password = input("Password: ")
+            try:
+                password = getpass.getpass(prompt="Password: ")
+            except Exception:
+                password = input("Password (visible): ")
             if check_password(name, password):
-                print("Login Successful!")
+                print("Login Successful")
                 break
             else:
-                print("Login Unsuccessful! (Incorrect Password/Username)")
+                print("Login Unsuccessful! (Incorrect password/username")
         else:
-            print("Username does not exist! Redirecting to account creation!")
-            password = input("Create a Password: ")
-            add_user(name, password)
-            print("Creation Successful! You can now login!")
+            print("User does not exist, proceeding to account creation!")
+            while True:
+                try:
+                    password = getpass.getpass(prompt="Create a Password: ")
+                    confirm = getpass.getpass(prompt="Confirm Password: ")
+                except Exception:
+                    password = input("Password (visible): ")
+                    confirm = input("Confirm Password (visible): ")
+                if password != confirm:
+                    print("Passwords do not match, try again!")
+                elif password == "":
+                    print("Password is empty, try again!")
+                else:
+                    add_user(name, password)
+                    print("Account Created Successfully! You can now log in!")
+                    break
 
-
-load()
-system()
+if __name__ == "__main__":
+    load()
+    system()
