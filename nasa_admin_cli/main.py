@@ -11,14 +11,15 @@ import pwinput
 import time
 import json
 import sys
+from importlib.resources import files
 #import firebase_admin
 #from firebase_admin import firestore, credentials
 from datetime import datetime, timedelta
 
 systemname = ""
 active = True
-USER_FILE = "users.json"
-MISSION_FILE = "missions.json"
+USER_FILE = files("nasa_admin_cli").joinpath("users.json")
+MISSION_FILE = files("nasa_admin_cli").joinpath("missions.json")
 #cred = credentials.Certificate('firebasekey.json')
 #firebase_admin.initialize_app(cred)
 SIM_RATIO = 4
@@ -269,7 +270,7 @@ def update(mission_name, new_date):
 
 def load_mission():
     try:
-        with open(MISSION_FILE, "r") as f:
+        with MISSION_FILE.open("r") as f:
             content = f.read().strip()
             if not content:
                 return {}
@@ -278,7 +279,7 @@ def load_mission():
         return {}
 def load_users():
     try:
-        with open(USER_FILE, "r") as f:
+        with USER_FILE.open("r") as f:
             content = f.read().strip()
             if not content:
                 return {}
@@ -366,7 +367,8 @@ def system():
             mission_name = input("Mission name: ")
             newname = input("New mission name: ")
             rename(mission_name, newname)
-
-if __name__ == "__main__":
+def main():
     load()
     loginsystem()
+if __name__ == "__main__":
+    main()
