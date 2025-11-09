@@ -26,7 +26,8 @@ Pretend you are a NASA admin (or launch person) through this CLI-based project! 
 PyCharm
 
 ## How to run?
-1. To run first clone this repository using `git clone --mirror https://github.com/nexora-droid/NASA-Admin-CLI` in your terminal.
-2. Then run `pip3 install -r requirments.txt` to install the one necessary library.
-3. Then in the same terminal run `clear`.
-4. Then type `python main.py` to run the code and enjoy my project!
+Now connected to a pip library! Go to [NASA-Admin-CLI](https://pypi.org/project/nasa-admin-cli/0.1.0/)!
+
+1. Copy the command from the website! `pip install nasa-admin-cli==0.1.0`
+2. Go to your project folder and run the command in terminal!
+3. Then type `nasa-admin-cli` into your terminal and enjoy the program!
