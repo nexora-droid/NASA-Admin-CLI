@@ -26,7 +26,7 @@ Pretend you are a NASA admin (or launch person) through this CLI-based project! 
 PyCharm
 
 ## How to run?
-Now connected to a pip library! Go to [NASA-Admin-CLI](https://pypi.org/project/nasa-admin-cli/0.1.0/)!
+Now connected to a pip library! Go to [NASA-Admin-CLI](https://pypi.org/project/nasa-admin-cli/)!
 
 1. Copy the command from the website! `pip install nasa-admin-cli`
 2. Go to your project folder and run the command in terminal!
