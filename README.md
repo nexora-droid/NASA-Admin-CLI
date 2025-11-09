@@ -28,6 +28,6 @@ PyCharm
 ## How to run?
 Now connected to a pip library! Go to [NASA-Admin-CLI](https://pypi.org/project/nasa-admin-cli/0.1.0/)!
 
-1. Copy the command from the website! `pip install nasa-admin-cli==0.1.0`
+1. Copy the command from the website! `pip install nasa-admin-cli`
 2. Go to your project folder and run the command in terminal!
 3. Then type `nasa-admin-cli` into your terminal and enjoy the program!
