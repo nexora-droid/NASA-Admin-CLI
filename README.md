@@ -1,4 +1,19 @@
 # NASA Admin CLI Project #
+# HOW TO RUN #
+## macOS or Linux:
+**Terminal:**
+1. Open Terminal. (`cmd + space`)
+2. Create a virtual environment `python3 -m venv venv`
+3. Activate it `source venv/bin/activate`
+4. Install package `pip install nasa-admin-cli`
+5. Run it `nasa-admin-cli`
+## Windows:
+**Command Prompt**
+1. Open Command Prompt (`Windows + R` then type `cmd` and hit `enter`)
+2. Create a virtual environment `python3 -m venv venv`
+3. Activate it `venv\Scripts\activate`
+4. Install package `pip install nasa-admin-cli`
+5. Run it `nasa-admin-cli`
 ## Overview
 <div align="center">
   <a href="https://moonshot.hackclub.com" target="_blank">
