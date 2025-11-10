@@ -367,6 +367,8 @@ def system():
             mission_name = input("Mission name: ")
             newname = input("New mission name: ")
             rename(mission_name, newname)
+        else:
+            print("Invalid command!")
 def main():
     load()
     loginsystem()
